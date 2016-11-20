@@ -1,0 +1,10 @@
+libzakformcgi (0.0.1-1~1.gbpcc7c43) UNRELEASED; urgency=medium
+
+  ** SNAPSHOT build @cc7c43e0ce6d982bf56507ce89c75f7f44d61d6a **
+
+  [ Andrea Zagli ]
+  * Initial release
+
+  [ tux ]
+
+ -- Andrea Zagli <azagli@libero.it>  Sun, 20 Nov 2016 15:11:41 +0100

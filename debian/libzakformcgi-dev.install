@@ -1,0 +1,4 @@
+usr/lib/*/libzakformcgi.a
+usr/lib/*/libzakformcgi.la
+usr/lib/*/pkgconfig/*
+usr/include/libzakformcgi*
