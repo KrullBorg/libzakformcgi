@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Andrea Zagli <azagli@libero.it>
+ * Copyright (C) 2015-2017 Andrea Zagli <azagli@libero.it>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,19 +32,19 @@ static void zak_form_cgi_form_element_class_init (ZakFormCgiFormElementClass *cl
 static void zak_form_cgi_form_element_init (ZakFormCgiFormElement *zak_form_cgi_form_element);
 
 static void zak_form_cgi_form_element_construct (ZakFormCgiFormElement *element,
-											const gchar *id,
-											GHashTable *ht_attrs);
+                                                 const gchar *id,
+                                                 GHashTable *ht_attrs);
 
 static GHashTable *zak_form_cgi_form_element_get_ht_attrs (ZakFormCgiFormElement *element);
 
 static void zak_form_cgi_form_element_set_property (GObject *object,
-                               guint property_id,
-                               const GValue *value,
-                               GParamSpec *pspec);
+                                                    guint property_id,
+                                                    const GValue *value,
+                                                    GParamSpec *pspec);
 static void zak_form_cgi_form_element_get_property (GObject *object,
-                               guint property_id,
-                               GValue *value,
-                               GParamSpec *pspec);
+                                                    guint property_id,
+                                                    GValue *value,
+                                                    GParamSpec *pspec);
 
 static void zak_form_cgi_form_element_dispose (GObject *gobject);
 static void zak_form_cgi_form_element_finalize (GObject *gobject);
@@ -212,6 +212,11 @@ gchar
 					g_hash_table_replace (priv->ht_attrs, g_strdup ("class"), g_strdup ("form-control"));
 				}
 
+			if (!zak_form_element_get_editable (ZAK_FORM_ELEMENT (element)))
+				{
+					g_hash_table_insert (priv->ht_attrs, (gpointer)"readonly", (gpointer)"readonly");
+				}
+
 			g_string_append (str, ZAK_FORM_CGI_FORM_ELEMENT_GET_CLASS (element)->render (element));
 		}
 
@@ -222,10 +227,10 @@ gchar
 			for (i = 0; i < messages->len; i++)
 				{
 					g_string_append_printf (str,
-											"\n<span id=\"helpBox_%s%d\" class=\"help-block\">%s</span>",
-											priv->id,
-											i + 1,
-											(gchar *)g_ptr_array_index (messages, i));
+					                        "\n<span id=\"helpBox_%s%d\" class=\"help-block\">%s</span>",
+					                        priv->id,
+					                        i + 1,
+					                        (gchar *)g_ptr_array_index (messages, i));
 				}
 		}
 
@@ -240,8 +245,8 @@ gchar
 /* PRIVATE */
 static void
 zak_form_cgi_form_element_construct (ZakFormCgiFormElement *element,
-								const gchar *id,
-								GHashTable *ht_attrs)
+                                     const gchar *id,
+                                     GHashTable *ht_attrs)
 {
 	ZakFormCgiFormElementPrivate *priv;
 
@@ -300,9 +305,9 @@ zak_form_cgi_form_element_set_value (ZakFormCgiFormElement *element, const gchar
 
 static void
 zak_form_cgi_form_element_set_property (GObject *object,
-                   guint property_id,
-                   const GValue *value,
-                   GParamSpec *pspec)
+                                        guint property_id,
+                                        const GValue *value,
+                                        GParamSpec *pspec)
 {
 	ZakFormCgiFormElement *zak_form_cgi_form_element = (ZakFormCgiFormElement *)object;
 	ZakFormCgiFormElementPrivate *priv = ZAK_FORM_CGI_FORM_ELEMENT_GET_PRIVATE (zak_form_cgi_form_element);
@@ -317,9 +322,9 @@ zak_form_cgi_form_element_set_property (GObject *object,
 
 static void
 zak_form_cgi_form_element_get_property (GObject *object,
-                   guint property_id,
-                   GValue *value,
-                   GParamSpec *pspec)
+                                        guint property_id,
+                                        GValue *value,
+                                        GParamSpec *pspec)
 {
 	ZakFormCgiFormElement *zak_form_cgi_form_element = (ZakFormCgiFormElement *)object;
 	ZakFormCgiFormElementPrivate *priv = ZAK_FORM_CGI_FORM_ELEMENT_GET_PRIVATE (zak_form_cgi_form_element);
