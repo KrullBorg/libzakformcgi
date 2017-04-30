@@ -166,6 +166,8 @@ gchar
 	gchar *ret;
 	GPtrArray *messages;
 
+	guint i;
+
 	ZakFormCgiFormElementPrivate *priv;
 
 	priv = ZAK_FORM_CGI_FORM_ELEMENT_GET_PRIVATE (element);
@@ -173,7 +175,8 @@ gchar
 	str = g_string_new ("<div class=\"form-group");
 
 	messages = zak_form_element_get_messages (ZAK_FORM_ELEMENT (element));
-	if (messages != NULL)
+	if (messages != NULL
+	    && messages->len > 0)
 		{
 			g_string_append (str, " has-error");
 		}
@@ -222,12 +225,10 @@ gchar
 
 	if (messages != NULL)
 		{
-			guint i;
-
 			for (i = 0; i < messages->len; i++)
 				{
 					g_string_append_printf (str,
-					                        "\n<span id=\"helpBox_%s%d\" class=\"help-block\">%s</span>",
+					                        "\n<span id=\"helpBox_%s_%d\" class=\"help-block\">%s</span>",
 					                        priv->id,
 					                        i + 1,
 					                        (gchar *)g_ptr_array_index (messages, i));
