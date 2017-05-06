@@ -38,6 +38,8 @@ struct _ZakFormCgiFormElementClass
 		void (*construct) (ZakFormCgiFormElement *element, const gchar *id, GHashTable *ht_attrs);
 		GHashTable *(*get_ht_attrs) (ZakFormCgiFormElement *element);
 
+		GHashTable *(*get_ht_label_attrs) (ZakFormCgiFormElement *element);
+
 		void (*xml_parsing) (ZakFormElement *element, xmlNode *xmlnode);
 
 		gchar *(*render) (ZakFormCgiFormElement *element);

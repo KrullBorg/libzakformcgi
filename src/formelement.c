@@ -36,6 +36,7 @@ static void zak_form_cgi_form_element_construct (ZakFormCgiFormElement *element,
                                                  GHashTable *ht_attrs);
 
 static GHashTable *zak_form_cgi_form_element_get_ht_attrs (ZakFormCgiFormElement *element);
+static GHashTable *zak_form_cgi_form_element_get_ht_label_attrs (ZakFormCgiFormElement *element);
 
 static void zak_form_cgi_form_element_set_property (GObject *object,
                                                     guint property_id,
@@ -86,6 +87,7 @@ zak_form_cgi_form_element_class_init (ZakFormCgiFormElementClass *class)
 
 	class->construct = zak_form_cgi_form_element_construct;
 	class->get_ht_attrs = zak_form_cgi_form_element_get_ht_attrs;
+	class->get_ht_label_attrs = zak_form_cgi_form_element_get_ht_label_attrs;
 }
 
 static void
@@ -185,9 +187,9 @@ gchar
 			g_string_append (str, " has-error");
 		}
 
-	g_string_append (str, "\">\n");
+	str = g_string_new ("<div class=\"form-group\">\n");
 
-	zak_form_cgi_form_element_render_label (element);
+	g_string_append (str, zak_form_cgi_form_element_render_label (element));
 
 	if (ZAK_FORM_CGI_IS_FORM_ELEMENT (element) && ZAK_FORM_CGI_FORM_ELEMENT_GET_CLASS (element)->render != NULL)
 		{
@@ -255,8 +257,7 @@ gchar
 
 	if (priv->ht_label_attrs != NULL)
 		{
-
-			str = g_string_new ("<div class=\"form-group");
+			str = g_string_new ("");
 
 			if (g_strcmp0 (g_hash_table_lookup (priv->ht_label_attrs, "for"), "") == 0)
 				{
@@ -314,6 +315,16 @@ static GHashTable
 	priv = ZAK_FORM_CGI_FORM_ELEMENT_GET_PRIVATE (element);
 
 	return priv->ht_attrs;
+}
+
+static GHashTable
+*zak_form_cgi_form_element_get_ht_label_attrs (ZakFormCgiFormElement *element)
+{
+	ZakFormCgiFormElementPrivate *priv;
+
+	priv = ZAK_FORM_CGI_FORM_ELEMENT_GET_PRIVATE (element);
+
+	return priv->ht_label_attrs;
 }
 
 static gchar

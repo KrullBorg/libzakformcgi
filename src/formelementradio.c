@@ -230,6 +230,7 @@ static gchar
 	gpointer value;
 
 	GHashTable *ht_attrs;
+	GHashTable *ht_label_attrs;
 	GHashTable *ht_attrs_option;
 
 	gchar *element_value;
@@ -240,11 +241,19 @@ static gchar
 
 	ZakFormCgiFormElementRadioPrivate *priv = ZAK_FORM_CGI_FORM_ELEMENT_RADIO_GET_PRIVATE (element);
 
-	ret = g_string_new ("");
-
 	klass = (ZakFormCgiFormElementClass *)g_type_class_peek_parent (ZAK_FORM_CGI_FORM_ELEMENT_RADIO_GET_CLASS (ZAK_FORM_CGI_FORM_ELEMENT_RADIO (element)));
 
 	ht_attrs = klass->get_ht_attrs (element);
+	ht_label_attrs = klass->get_ht_label_attrs (element);
+
+	if (ht_label_attrs != NULL)
+		{
+			ret = g_string_new ("<br/>\n");
+		}
+	else
+		{
+			ret = g_string_new ("");
+		}
 
 	element_value = zak_form_element_get_value (ZAK_FORM_ELEMENT (element));
 
