@@ -187,19 +187,7 @@ gchar
 
 	g_string_append (str, "\">\n");
 
-	if (priv->ht_label_attrs != NULL)
-		{
-			gchar *lbl_id;
-
-			if (g_strcmp0 (g_hash_table_lookup (priv->ht_label_attrs, "for"), "") == 0)
-				{
-					g_hash_table_replace (priv->ht_label_attrs, "for", g_strdup (priv->id));
-				}
-
-			lbl_id = g_strdup_printf ("lbl_%s", priv->id);
-			g_string_append (str, zak_cgi_tag_tag_ht ("label", lbl_id, priv->ht_label_attrs));
-			g_free (lbl_id);
-		}
+	zak_form_cgi_form_element_render_label (element);
 
 	if (ZAK_FORM_CGI_IS_FORM_ELEMENT (element) && ZAK_FORM_CGI_FORM_ELEMENT_GET_CLASS (element)->render != NULL)
 		{
@@ -243,6 +231,52 @@ gchar
 
 	ret = g_strdup (str->str);
 	g_string_free (str, TRUE);
+
+	return ret;
+}
+
+/**
+ * zak_form_cgi_form_element_render_label:
+ * @element:
+ *
+ */
+gchar
+*zak_form_cgi_form_element_render_label (ZakFormCgiFormElement *element)
+{
+	GString *str;
+	gchar *ret;
+	gchar *lbl_id;
+
+	ZakFormCgiFormElementPrivate *priv;
+
+	priv = ZAK_FORM_CGI_FORM_ELEMENT_GET_PRIVATE (element);
+
+	str = NULL;
+
+	if (priv->ht_label_attrs != NULL)
+		{
+
+			str = g_string_new ("<div class=\"form-group");
+
+			if (g_strcmp0 (g_hash_table_lookup (priv->ht_label_attrs, "for"), "") == 0)
+				{
+					g_hash_table_replace (priv->ht_label_attrs, "for", g_strdup (priv->id));
+				}
+
+			lbl_id = g_strdup_printf ("lbl_%s", priv->id);
+			g_string_append (str, zak_cgi_tag_tag_ht ("label", lbl_id, priv->ht_label_attrs));
+			g_free (lbl_id);
+		}
+
+	if (str != NULL)
+		{
+			ret = g_strdup (str->str);
+			g_string_free (str, TRUE);
+		}
+	else
+		{
+			ret = g_strdup ("");
+		}
 
 	return ret;
 }

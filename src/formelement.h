@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Andrea Zagli <azagli@libero.it>
+ * Copyright (C) 2015-2017 Andrea Zagli <azagli@libero.it>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -51,6 +51,7 @@ void zak_form_cgi_form_element_set_label (ZakFormCgiFormElement *element, const 
 void zak_form_cgi_form_element_bind (ZakFormCgiFormElement *element, const gchar *value);
 
 gchar *zak_form_cgi_form_element_render (ZakFormCgiFormElement *element);
+gchar *zak_form_cgi_form_element_render_label (ZakFormCgiFormElement *element);
 
 
 G_END_DECLS
