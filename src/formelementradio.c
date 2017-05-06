@@ -47,6 +47,7 @@ static void zak_form_cgi_form_element_radio_finalize (GObject *gobject);
 typedef struct _ZakFormCgiFormElementRadioPrivate ZakFormCgiFormElementRadioPrivate;
 struct _ZakFormCgiFormElementRadioPrivate
 	{
+		gboolean in_line;
 		GHashTable *ht_options;
 	};
 
@@ -73,6 +74,7 @@ zak_form_cgi_form_element_radio_init (ZakFormCgiFormElementRadio *zak_form_cgi_f
 {
 	ZakFormCgiFormElementRadioPrivate *priv = ZAK_FORM_CGI_FORM_ELEMENT_RADIO_GET_PRIVATE (zak_form_cgi_form_element_radio);
 
+	priv->in_line = TRUE;
 	priv->ht_options = g_hash_table_new (g_str_hash, g_str_equal);
 }
 
@@ -123,6 +125,22 @@ ZakFormCgiFormElement
 }
 
 gboolean
+zak_form_cgi_form_element_radio_get_in_line (ZakFormCgiFormElementRadio *element)
+{
+	ZakFormCgiFormElementRadioPrivate *priv = ZAK_FORM_CGI_FORM_ELEMENT_RADIO_GET_PRIVATE (element);
+
+	return priv->in_line;
+}
+
+void
+zak_form_cgi_form_element_radio_set_in_line (ZakFormCgiFormElementRadio *element, gboolean in_line)
+{
+	ZakFormCgiFormElementRadioPrivate *priv = ZAK_FORM_CGI_FORM_ELEMENT_RADIO_GET_PRIVATE (element);
+
+	priv->in_line = in_line;
+}
+
+gboolean
 zak_form_cgi_form_element_radio_xml_parsing (ZakFormElement *element, xmlNodePtr xmlnode)
 {
 	gboolean ret;
@@ -145,18 +163,23 @@ zak_form_cgi_form_element_radio_xml_parsing (ZakFormElement *element, xmlNodePtr
 	cur = xmlnode->children;
 	while (cur != NULL)
 		{
-			if (xmlStrcmp (cur->name, (const xmlChar *)"id") == 0)
+			if (xmlStrEqual (cur->name, (const xmlChar *)"id"))
 				{
 					id = (gchar *)xmlNodeGetContent (cur);
 				}
-			else if (xmlStrcmp (cur->name, (const xmlChar *)"label") == 0)
+			else if (xmlStrEqual (cur->name, (const xmlChar *)"label"))
 				{
 					zak_form_cgi_form_element_set_label (ZAK_FORM_CGI_FORM_ELEMENT (element), (gchar *)xmlNodeGetContent (cur), NULL);
 				}
-			else if (xmlStrcmp (cur->name, (const xmlChar *)"text") == 0)
+			else if (xmlStrEqual (cur->name, (const xmlChar *)"text"))
 				{
 				}
-			else if (xmlStrcmp (cur->name, (const xmlChar *)"zak-cgi-options") == 0)
+			else if (xmlStrEqual (cur->name, (const xmlChar *)"zak-cgi-inline"))
+				{
+					zak_form_cgi_form_element_radio_set_in_line (ZAK_FORM_CGI_FORM_ELEMENT_RADIO (element),
+					                                             (gboolean)xmlStrEqual (xmlNodeGetContent (cur), (const xmlChar *)"TRUE"));
+				}
+			else if (xmlStrEqual (cur->name, (const xmlChar *)"zak-cgi-options"))
 				{
 					xmlNode *xnode;
 
@@ -217,7 +240,7 @@ static gchar
 
 	ZakFormCgiFormElementRadioPrivate *priv = ZAK_FORM_CGI_FORM_ELEMENT_RADIO_GET_PRIVATE (element);
 
-	ret = g_string_new ("<br/>\n");
+	ret = g_string_new ("");
 
 	klass = (ZakFormCgiFormElementClass *)g_type_class_peek_parent (ZAK_FORM_CGI_FORM_ELEMENT_RADIO_GET_CLASS (ZAK_FORM_CGI_FORM_ELEMENT_RADIO (element)));
 
@@ -250,13 +273,18 @@ static gchar
 					g_free (attr_class);
 				}
 
-			g_string_append_printf (ret, "\n<label class=\"radio-inline\">\n%s%s</label>",
+			g_string_append_printf (ret, "\n%s<label%s>\n%s %s</label>%s",
+			                        priv->in_line ? "" : "<div class=\"radio\">\n",
+			                        priv->in_line ? " class=\"radio-inline\"" : "",
 			                        zak_cgi_tag_tag_ht ("input",
 			                                            g_strdup_printf ("%s_%d",
 			                                                              zak_form_cgi_form_element_get_id (element),
 			                                                             ++new_id),
 			                                            ht_attrs_option),
-			                        value);
+			                        value,
+			                        priv->in_line ? "" : "\n</div><br/>");
+
+			g_hash_table_unref (ht_attrs_option);
 		}
 
 	ret_value = g_strdup (ret->str);
