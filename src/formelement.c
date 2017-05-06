@@ -138,7 +138,7 @@ zak_form_cgi_form_element_set_label (ZakFormCgiFormElement *element, const gchar
 
 			g_hash_table_replace (priv->ht_label_attrs, "zak-cgi-content", g_strdup (label));
 			g_hash_table_replace (priv->ht_label_attrs, "for", priv->id != NULL  ? g_strdup (priv->id) : g_strdup (""));
-			g_hash_table_replace (priv->ht_label_attrs, "class", "control-label");
+			g_hash_table_replace (priv->ht_label_attrs, "class", g_strdup ("control-label"));
 
 			zak_form_element_set_long_name (ZAK_FORM_ELEMENT (element), label);
 		}
@@ -174,6 +174,8 @@ gchar
 
 	guint i;
 
+	gchar *attr_class;
+
 	ZakFormCgiFormElementPrivate *priv;
 
 	priv = ZAK_FORM_CGI_FORM_ELEMENT_GET_PRIVATE (element);
@@ -193,8 +195,6 @@ gchar
 
 	if (ZAK_FORM_CGI_IS_FORM_ELEMENT (element) && ZAK_FORM_CGI_FORM_ELEMENT_GET_CLASS (element)->render != NULL)
 		{
-			gchar *attr_class;
-
 			attr_class = g_hash_table_lookup (priv->ht_attrs, "class");
 			if (attr_class != NULL)
 				{
@@ -206,7 +206,7 @@ gchar
 				}
 			else
 				{
-					g_hash_table_replace (priv->ht_attrs, g_strdup ("class"), g_strdup ("form-control"));
+					g_hash_table_replace (priv->ht_attrs, "class", g_strdup ("form-control"));
 				}
 
 			if (!zak_form_element_get_editable (ZAK_FORM_ELEMENT (element)))

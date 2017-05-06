@@ -233,6 +233,8 @@ static gchar
 	GHashTable *ht_label_attrs;
 	GHashTable *ht_attrs_option;
 
+	gchar *attr_class;
+
 	gchar *element_value;
 
 	guint new_id;
@@ -262,8 +264,6 @@ static gchar
 	g_hash_table_iter_init (&iter, priv->ht_options);
 	while (g_hash_table_iter_next (&iter, &key, &value))
 		{
-			gchar *attr_class;
-
 			ht_attrs_option = g_hash_table_new (g_str_hash, g_str_equal);
 			zak_utils_ghashtable_copy (ht_attrs, ht_attrs_option);
 
@@ -287,7 +287,7 @@ static gchar
 			                        priv->in_line ? " class=\"radio-inline\"" : "",
 			                        zak_cgi_tag_tag_ht ("input",
 			                                            g_strdup_printf ("%s_%d",
-			                                                              zak_form_cgi_form_element_get_id (element),
+			                                                             zak_form_cgi_form_element_get_id (element),
 			                                                             ++new_id),
 			                                            ht_attrs_option),
 			                        value,
