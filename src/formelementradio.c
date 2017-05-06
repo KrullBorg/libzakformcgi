@@ -291,7 +291,7 @@ static gchar
 			                                                             ++new_id),
 			                                            ht_attrs_option),
 			                        value,
-			                        priv->in_line ? "" : "\n</div><br/>");
+			                        priv->in_line ? "" : "\n</div>");
 
 			g_hash_table_unref (ht_attrs_option);
 		}

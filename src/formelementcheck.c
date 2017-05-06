@@ -128,7 +128,7 @@ gchar
 *zak_form_cgi_form_element_check_get_text (ZakFormCgiFormElementCheck *element)
 {
 	ZakFormCgiFormElementCheckPrivate *priv = ZAK_FORM_CGI_FORM_ELEMENT_CHECK_GET_PRIVATE (element);
-	g_warning("TEXT %s",priv->text);
+
 	return g_strdup (priv->text);
 }
 
@@ -237,6 +237,7 @@ static gchar
 	GString *str;
 
 	GHashTable *ht_attrs;
+	GHashTable *ht_label_attrs;
 
 	gchar *value;
 	gchar *attr_class;
@@ -248,6 +249,16 @@ static gchar
 	klass = (ZakFormCgiFormElementClass *)g_type_class_peek_parent (ZAK_FORM_CGI_FORM_ELEMENT_CHECK_GET_CLASS (ZAK_FORM_CGI_FORM_ELEMENT_CHECK (element)));
 
 	ht_attrs = klass->get_ht_attrs (element);
+	ht_label_attrs = klass->get_ht_label_attrs (element);
+
+	if (ht_label_attrs != NULL)
+		{
+			str = g_string_new ("<br/>\n");
+		}
+	else
+		{
+			str = g_string_new ("");
+		}
 
 	value = zak_form_element_get_value (ZAK_FORM_ELEMENT (element));
 	if (value != NULL
@@ -263,13 +274,17 @@ static gchar
 			g_free (attr_class);
 		}
 
-	str = g_string_new ("");
 	g_string_append_printf (str, "\n%s<label%s>\n%s %s</label>%s",
 	                        priv->in_line ? "" : "<div class=\"checkbox\">\n",
 	                        priv->in_line ? " class=\"checkbox-inline\"" : "",
 	                        zak_cgi_tag_tag_ht ("input", zak_form_cgi_form_element_get_id (element), ht_attrs),
 	                        zak_form_cgi_form_element_check_get_text (ZAK_FORM_CGI_FORM_ELEMENT_CHECK (element)),
 	                        priv->in_line ? "" : "\n</div><br/>");
+
+	if (ht_label_attrs != NULL)
+		{
+			g_string_append (str, "<br/><br/>\n");
+		}
 
 	ret = g_strdup (str->str);
 	g_string_free (str, TRUE);
