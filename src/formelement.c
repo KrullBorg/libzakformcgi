@@ -126,16 +126,20 @@ zak_form_cgi_form_element_set_label (ZakFormCgiFormElement *element, const gchar
 	if (priv->ht_label_attrs != NULL)
 		{
 			g_hash_table_destroy (priv->ht_label_attrs);
+			priv->ht_label_attrs = NULL;
 		}
 
-	va_start (ap, label);
-	priv->ht_label_attrs = zak_cgi_commons_valist_to_ghashtable (ap);
+	if (label != NULL)
+		{
+			va_start (ap, label);
+			priv->ht_label_attrs = zak_cgi_commons_valist_to_ghashtable (ap);
 
-	g_hash_table_replace (priv->ht_label_attrs, "zak-cgi-content", g_strdup (label));
-	g_hash_table_replace (priv->ht_label_attrs, "for", priv->id != NULL  ? g_strdup (priv->id) : g_strdup (""));
-	g_hash_table_replace (priv->ht_label_attrs, "class", "control-label");
+			g_hash_table_replace (priv->ht_label_attrs, "zak-cgi-content", g_strdup (label));
+			g_hash_table_replace (priv->ht_label_attrs, "for", priv->id != NULL  ? g_strdup (priv->id) : g_strdup (""));
+			g_hash_table_replace (priv->ht_label_attrs, "class", "control-label");
 
-	zak_form_element_set_long_name (ZAK_FORM_ELEMENT (element), label);
+			zak_form_element_set_long_name (ZAK_FORM_ELEMENT (element), label);
+		}
 }
 
 /**
