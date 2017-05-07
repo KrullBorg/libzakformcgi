@@ -48,10 +48,16 @@ typedef struct _ZakFormCgiFormElementRadioPrivate ZakFormCgiFormElementRadioPriv
 struct _ZakFormCgiFormElementRadioPrivate
 	{
 		gboolean in_line;
-		GHashTable *ht_options;
+		GPtrArray *ar_options;
 	};
 
 G_DEFINE_TYPE (ZakFormCgiFormElementRadio, zak_form_cgi_form_element_radio, ZAK_FORM_CGI_TYPE_FORM_ELEMENT)
+
+typedef struct
+	{
+		gchar *value;
+		gchar *content;
+	} Option;
 
 static void
 zak_form_cgi_form_element_radio_class_init (ZakFormCgiFormElementRadioClass *klass)
@@ -75,7 +81,7 @@ zak_form_cgi_form_element_radio_init (ZakFormCgiFormElementRadio *zak_form_cgi_f
 	ZakFormCgiFormElementRadioPrivate *priv = ZAK_FORM_CGI_FORM_ELEMENT_RADIO_GET_PRIVATE (zak_form_cgi_form_element_radio);
 
 	priv->in_line = TRUE;
-	priv->ht_options = g_hash_table_new (g_str_hash, g_str_equal);
+	priv->ar_options = g_ptr_array_new ();
 }
 
 /**
@@ -188,9 +194,12 @@ zak_form_cgi_form_element_radio_xml_parsing (ZakFormElement *element, xmlNodePtr
 						{
 							if (xmlStrcmp (xnode->name, (const xmlChar *)"option") == 0)
 								{
-									g_hash_table_insert (priv->ht_options,
-									                     (gpointer)xmlGetProp (xnode, "value"),
-									                     (gpointer)xmlGetProp (xnode, "content"));
+									Option *opt = g_new0 (Option, 1);
+
+									opt->value = (gchar *)xmlGetProp (xnode, (const xmlChar *)"value");
+									opt->content = (gchar *)xmlGetProp (xnode, (const xmlChar *)"content");
+
+									g_ptr_array_add (priv->ar_options, (gpointer)opt);
 								}
 
 							xnode = xnode->next;
@@ -198,7 +207,7 @@ zak_form_cgi_form_element_radio_xml_parsing (ZakFormElement *element, xmlNodePtr
 				}
 			else
 				{
-					g_hash_table_replace (ht_attrs, g_strdup (cur->name), (gchar *)xmlNodeGetContent (cur));
+					g_hash_table_replace (ht_attrs, g_strdup ((gchar *)cur->name), (gchar *)xmlNodeGetContent (cur));
 				}
 
 			cur = cur->next;
@@ -225,9 +234,7 @@ static gchar
 	gchar *ret_value;
 	GString *ret;
 
-	GHashTableIter iter;
-	gpointer key;
-	gpointer value;
+	guint i;
 
 	GHashTable *ht_attrs;
 	GHashTable *ht_label_attrs;
@@ -261,25 +268,26 @@ static gchar
 
 	new_id = 0;
 
-	g_hash_table_iter_init (&iter, priv->ht_options);
-	while (g_hash_table_iter_next (&iter, &key, &value))
+	attr_class = g_hash_table_lookup (ht_attrs, "class");
+	if (attr_class != NULL)
 		{
+			g_hash_table_insert (ht_attrs, "class", g_strjoinv ("", g_strsplit (attr_class, "form-control", -1)));
+			g_free (attr_class);
+		}
+
+	for (i = 0; i < priv->ar_options->len; i++)
+		{
+			Option *opt = (Option *)g_ptr_array_index (priv->ar_options, i);
+
 			ht_attrs_option = g_hash_table_new (g_str_hash, g_str_equal);
 			zak_utils_ghashtable_copy (ht_attrs, ht_attrs_option);
 
-			g_hash_table_insert (ht_attrs_option, (gpointer)"value", (gpointer)g_strdup (key));
+			g_hash_table_insert (ht_attrs_option, (gpointer)"value", (gpointer)g_strdup (opt->value));
 
 			if (element_value != NULL
-			    && g_strcmp0 (element_value, key) == 0)
+			    && g_strcmp0 (element_value, opt->value) == 0)
 				{
 					g_hash_table_insert (ht_attrs_option, (gpointer)"checked", (gpointer)"checked");
-				}
-
-			attr_class = g_hash_table_lookup (ht_attrs_option, "class");
-			if (attr_class != NULL)
-				{
-					g_hash_table_insert (ht_attrs_option, "class", g_strjoinv ("", g_strsplit (attr_class, "form-control", -1)));
-					g_free (attr_class);
 				}
 
 			g_string_append_printf (ret, "\n%s<label%s>\n%s %s</label>%s",
@@ -290,7 +298,7 @@ static gchar
 			                                                             zak_form_cgi_form_element_get_id (element),
 			                                                             ++new_id),
 			                                            ht_attrs_option),
-			                        value,
+			                        opt->content,
 			                        priv->in_line ? "" : "\n</div>");
 
 			g_hash_table_unref (ht_attrs_option);

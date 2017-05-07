@@ -189,7 +189,7 @@ gchar
 			g_string_append (str, " has-error");
 		}
 
-	str = g_string_new ("<div class=\"form-group\">\n");
+	g_string_append (str, "\">\n");
 
 	g_string_append (str, zak_form_cgi_form_element_render_label (element));
 
@@ -206,7 +206,7 @@ gchar
 				}
 			else
 				{
-					g_hash_table_replace (priv->ht_attrs, "class", g_strdup ("form-control"));
+					g_hash_table_insert (priv->ht_attrs, "class", g_strdup ("form-control"));
 				}
 
 			if (!zak_form_element_get_editable (ZAK_FORM_ELEMENT (element)))
