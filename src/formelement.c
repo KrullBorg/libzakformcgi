@@ -140,7 +140,10 @@ zak_form_cgi_form_element_set_label (ZakFormCgiFormElement *element, const gchar
 			g_hash_table_replace (priv->ht_label_attrs, "for", priv->id != NULL  ? g_strdup (priv->id) : g_strdup (""));
 			g_hash_table_replace (priv->ht_label_attrs, "class", g_strdup ("control-label"));
 
-			zak_form_element_set_long_name (ZAK_FORM_ELEMENT (element), label);
+			if (zak_form_element_get_long_name (ZAK_FORM_ELEMENT (element)) == NULL)
+				{
+					zak_form_element_set_long_name (ZAK_FORM_ELEMENT (element), label);
+				}
 		}
 }
 
