@@ -23,6 +23,7 @@
 #include <libzakformcgi/formelement.h>
 #include <libzakformcgi/formelementcheck.h>
 #include <libzakformcgi/formelementemail.h>
+#include <libzakformcgi/formelementfile.h>
 #include <libzakformcgi/formelementhidden.h>
 #include <libzakformcgi/formelementpassword.h>
 #include <libzakformcgi/formelementradio.h>
