@@ -69,6 +69,9 @@ void zak_form_cgi_form_element_file_set_size_range (ZakFormElement *element, gui
 void zak_form_cgi_form_element_file_set_mime_type (ZakFormElement *element, const gchar *mime_type);
 gchar *zak_form_cgi_form_element_file_get_mime_type (ZakFormElement *element);
 
+void zak_form_cgi_form_element_file_set_mime_type_message (ZakFormElement *element, const gchar *mime_type_message);
+gchar *zak_form_cgi_form_element_file_get_mime_type_message (ZakFormElement *element);
+
 
 G_END_DECLS
 

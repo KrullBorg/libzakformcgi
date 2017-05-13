@@ -20,6 +20,8 @@
 	#include <config.h>
 #endif
 
+#include <glib/gi18n-lib.h>
+
 #include <libzakcgi/libzakcgi.h>
 #include "formelementfile.h"
 
@@ -50,6 +52,7 @@ struct _ZakFormCgiFormElementFilePrivate
 		guint size_min;
 		guint size_max;
 		gchar *mime_type;
+		gchar *mime_type_message;
 	};
 
 G_DEFINE_TYPE (ZakFormCgiFormElementFile, zak_form_cgi_form_element_file, ZAK_FORM_CGI_TYPE_FORM_ELEMENT)
@@ -79,6 +82,7 @@ zak_form_cgi_form_element_file_init (ZakFormCgiFormElementFile *zak_form_cgi_for
 	priv->size_min = 0;
 	priv->size_max = 0;
 	priv->mime_type = NULL;
+	priv->mime_type_message = NULL;
 }
 
 /**
@@ -167,10 +171,11 @@ zak_form_cgi_form_element_file_xml_parsing (ZakFormElement *element, xmlNodePtr 
 			else if (xmlStrcmp (cur->name, (const xmlChar *)"zak-cgi-mime-type") == 0)
 				{
 					zak_form_cgi_form_element_file_set_mime_type (element, (gchar *)xmlNodeGetContent (cur));
+					zak_form_cgi_form_element_file_set_mime_type_message (element, (gchar *)xmlGetProp (cur, (const xmlChar *)"message"));
 				}
 			else
 				{
-					g_hash_table_replace (ht_attrs, g_strdup (cur->name), (gchar *)xmlNodeGetContent (cur));
+					g_hash_table_replace (ht_attrs, g_strdup ((gchar *)cur->name), (gchar *)xmlNodeGetContent (cur));
 				}
 
 			cur = cur->next;
@@ -259,6 +264,38 @@ gchar
 	else
 		{
 			return g_strdup (priv->mime_type);
+		}
+}
+
+void
+zak_form_cgi_form_element_file_set_mime_type_message (ZakFormElement *element, const gchar *mime_type_message)
+{
+	ZakFormCgiFormElementFilePrivate *priv = ZAK_FORM_CGI_FORM_ELEMENT_FILE_GET_PRIVATE (element);
+
+	if (priv->mime_type_message != NULL)
+		{
+			g_free (priv->mime_type_message);
+			priv->mime_type_message = NULL;
+		}
+
+	if (mime_type_message != NULL)
+		{
+			priv->mime_type_message = g_strdup (mime_type_message);
+		}
+}
+
+gchar
+*zak_form_cgi_form_element_file_get_mime_type_message (ZakFormElement *element)
+{
+	ZakFormCgiFormElementFilePrivate *priv = ZAK_FORM_CGI_FORM_ELEMENT_FILE_GET_PRIVATE (element);
+
+	if (priv->mime_type_message == NULL)
+		{
+			return NULL;
+		}
+	else
+		{
+			return g_strdup (priv->mime_type_message);
 		}
 }
 
@@ -352,6 +389,8 @@ zak_form_cgi_form_element_file_after_validating (ZakFormElement *element, GPtrAr
 {
 	gboolean ret;
 
+	ZakCgiFile *cgi_file;
+
 	ZakFormCgiFormElementFilePrivate *priv = ZAK_FORM_CGI_FORM_ELEMENT_FILE_GET_PRIVATE (element);
 
 	ret = FALSE;
@@ -360,17 +399,76 @@ zak_form_cgi_form_element_file_after_validating (ZakFormElement *element, GPtrAr
 	    || priv->size_max > 0
 	    || priv->mime_type != NULL)
 		{
-			if (priv->size_min > 0)
+			cgi_file = (ZakCgiFile *)g_value_get_boxed (zak_form_element_get_value_gvalue (element));
+			if (cgi_file != NULL
+			    && cgi_file->content != NULL
+			    && cgi_file->name != NULL
+			    && g_strcmp0 (cgi_file->name, "") != 0)
 				{
+					if (priv->size_min > 0
+						&& cgi_file->size < priv->size_min)
+						{
+							g_ptr_array_add (ar_messages, g_strdup_printf (_("The size of «%s» must be greater than %d."),
+							                                               zak_form_element_get_long_name (element),
+							                                               priv->size_min));
+							ret = TRUE;
+						}
+					if (priv->size_max > 0
+					    && cgi_file->size > priv->size_max)
+						{
+							g_ptr_array_add (ar_messages, g_strdup_printf (_("The size of «%s» cannot be greater than %d."),
+							                                               zak_form_element_get_long_name (element),
+							                                               priv->size_max));
+							ret = TRUE;
+						}
+					if (priv->mime_type != NULL)
+						{
+							gchar **splitted;
+							guint l;
+							guint i;
+							gboolean found;
+							gchar *mime;
 
+							found = FALSE;
+
+							mime = g_content_type_get_mime_type (cgi_file->content_type);
+
+							if (mime == NULL)
+								{
+									mime = g_strdup (cgi_file->content_type);
+								}
+
+							splitted = g_strsplit (priv->mime_type, "|", -1);
+							l = g_strv_length (splitted);
+							for (i = 0; i < l; i++)
+								{
+									if (g_strcmp0 (mime, splitted[i]) == 0)
+										{
+											found = TRUE;
+											break;
+										}
+								}
+							g_strfreev (splitted);
+
+							if (mime != NULL)
+								{
+									g_free (mime);
+								}
+
+							if (!found)
+								{
+									g_ptr_array_add (ar_messages, g_strdup_printf (_("The file for field «%s» must be of type «%s»."),
+									                                               zak_form_element_get_long_name (element),
+									                                               priv->mime_type_message != NULL ? priv->mime_type_message : priv->mime_type));
+									ret = TRUE;
+								}
+						}
 				}
-			if (priv->size_max > 0)
+			else if (priv->size_min > 0)
 				{
-
-				}
-			if (priv->mime_type != NULL)
-				{
-
+					g_ptr_array_add (ar_messages, g_strdup_printf (_("The field «%s» cannot be empty."),
+					                                               zak_form_element_get_long_name (element)));
+					ret = TRUE;
 				}
 		}
 
