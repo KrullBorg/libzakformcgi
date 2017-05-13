@@ -152,7 +152,7 @@ zak_form_cgi_form_bind (ZakFormCgiForm *zakcgiform)
 					gval = zak_cgi_main_get_stdin_field (priv->zakcgimain, zak_form_cgi_form_element_get_id (element));
 					if (gval != NULL)
 						{
-							zak_form_cgi_form_element_bind (element, g_value_get_string (gval));
+							zak_form_cgi_form_element_bind (element, gval);
 						}
 				}
 		}

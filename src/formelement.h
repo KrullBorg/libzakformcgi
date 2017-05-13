@@ -50,7 +50,7 @@ gchar *zak_form_cgi_form_element_get_id (ZakFormCgiFormElement *element);
 
 void zak_form_cgi_form_element_set_label (ZakFormCgiFormElement *element, const gchar *label, ...);
 
-void zak_form_cgi_form_element_bind (ZakFormCgiFormElement *element, const gchar *value);
+void zak_form_cgi_form_element_bind (ZakFormCgiFormElement *element, GValue *value);
 
 gchar *zak_form_cgi_form_element_render (ZakFormCgiFormElement *element);
 gchar *zak_form_cgi_form_element_render_label (ZakFormCgiFormElement *element);

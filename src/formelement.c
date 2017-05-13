@@ -20,7 +20,9 @@
 	#include <config.h>
 #endif
 
+#include <libzakutils/libzakutils.h>
 #include <libzakcgi/libzakcgi.h>
+
 #include "formelement.h"
 
 enum
@@ -50,8 +52,8 @@ static void zak_form_cgi_form_element_get_property (GObject *object,
 static void zak_form_cgi_form_element_dispose (GObject *gobject);
 static void zak_form_cgi_form_element_finalize (GObject *gobject);
 
-static gchar *zak_form_cgi_form_element_get_value (ZakFormCgiFormElement *element);
-static gboolean zak_form_cgi_form_element_set_value (ZakFormCgiFormElement *element, const gchar *value);
+static GValue *zak_form_cgi_form_element_get_value (ZakFormCgiFormElement *element);
+static gboolean zak_form_cgi_form_element_set_value (ZakFormCgiFormElement *element, GValue *value);
 static void zak_form_cgi_form_element_xml_parsing (ZakFormElement *element, xmlNode *xmlnode);
 
 #define ZAK_FORM_CGI_FORM_ELEMENT_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), ZAK_FORM_CGI_TYPE_FORM_ELEMENT, ZakFormCgiFormElementPrivate))
@@ -62,7 +64,7 @@ struct _ZakFormCgiFormElementPrivate
 		gchar *id;
 		GHashTable *ht_attrs;
 		GHashTable *ht_label_attrs;
-		gchar *value;
+		GValue *value;
 	};
 
 G_DEFINE_TYPE (ZakFormCgiFormElement, zak_form_cgi_form_element, ZAK_FORM_TYPE_ELEMENT)
@@ -154,13 +156,13 @@ zak_form_cgi_form_element_set_label (ZakFormCgiFormElement *element, const gchar
  *
  */
 void
-zak_form_cgi_form_element_bind (ZakFormCgiFormElement *element, const gchar *value)
+zak_form_cgi_form_element_bind (ZakFormCgiFormElement *element, GValue *value)
 {
 	ZakFormCgiFormElementPrivate *priv;
 
 	priv = ZAK_FORM_CGI_FORM_ELEMENT_GET_PRIVATE (element);
 
-	priv->value = g_strdup (value);
+	priv->value = value;
 }
 
 /**
@@ -330,28 +332,28 @@ static GHashTable
 	return priv->ht_label_attrs;
 }
 
-static gchar
+static GValue
 *zak_form_cgi_form_element_get_value (ZakFormCgiFormElement *element)
 {
-	gchar *ret;
+	GValue *ret;
 
 	ZakFormCgiFormElementPrivate *priv;
 
 	priv = ZAK_FORM_CGI_FORM_ELEMENT_GET_PRIVATE (element);
 
-	ret = g_strdup (priv->value);
+	ret = priv->value;
 
 	return ret;
 }
 
 static gboolean
-zak_form_cgi_form_element_set_value (ZakFormCgiFormElement *element, const gchar *value)
+zak_form_cgi_form_element_set_value (ZakFormCgiFormElement *element, GValue *value)
 {
 	ZakFormCgiFormElementPrivate *priv;
 
 	priv = ZAK_FORM_CGI_FORM_ELEMENT_GET_PRIVATE (element);
 
-	priv->value = g_strdup (value);
+	priv->value = value;
 
 	return TRUE;
 }
