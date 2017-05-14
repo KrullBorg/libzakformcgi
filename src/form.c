@@ -20,6 +20,8 @@
 	#include <config.h>
 #endif
 
+#include <glib/gi18n-lib.h>
+
 #include "form.h"
 #include "formelementstring.h"
 
@@ -27,13 +29,13 @@ static void zak_form_cgi_form_class_init (ZakFormCgiFormClass *class);
 static void zak_form_cgi_form_init (ZakFormCgiForm *zak_form_cgi_form);
 
 static void zak_form_cgi_form_set_property (GObject *object,
-                               guint property_id,
-                               const GValue *value,
-                               GParamSpec *pspec);
+                                            guint property_id,
+                                            const GValue *value,
+                                            GParamSpec *pspec);
 static void zak_form_cgi_form_get_property (GObject *object,
-                               guint property_id,
-                               GValue *value,
-                               GParamSpec *pspec);
+                                            guint property_id,
+                                            GValue *value,
+                                            GParamSpec *pspec);
 
 static void zak_form_cgi_form_dispose (GObject *gobject);
 static void zak_form_cgi_form_finalize (GObject *gobject);
@@ -49,6 +51,30 @@ struct _ZakFormCgiFormPrivate
 	};
 
 G_DEFINE_TYPE (ZakFormCgiForm, zak_form_cgi_form, ZAK_FORM_TYPE_FORM)
+
+#ifdef G_OS_WIN32
+static HMODULE backend_dll = NULL;
+
+BOOL WINAPI DllMain (HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved);
+
+BOOL WINAPI
+DllMain (HINSTANCE hinstDLL,
+         DWORD     fdwReason,
+         LPVOID    lpReserved)
+{
+	switch (fdwReason)
+		{
+		case DLL_PROCESS_ATTACH:
+			backend_dll = (HMODULE) hinstDLL;
+			break;
+		case DLL_THREAD_ATTACH:
+		case DLL_THREAD_DETACH:
+		case DLL_PROCESS_DETACH:
+			break;
+		}
+	return TRUE;
+}
+#endif
 
 static void
 zak_form_cgi_form_class_init (ZakFormCgiFormClass *class)
@@ -83,10 +109,43 @@ zak_form_cgi_form_init (ZakFormCgiForm *zak_form_cgi_form)
 ZakFormCgiForm
 *zak_form_cgi_form_new (ZakCgiMain *zakcgimain, ...)
 {
+	gchar *localedir;
+
 	ZakFormCgiForm *zak_form_cgi_form;
 	ZakFormCgiFormPrivate *priv;
 
 	va_list ap;
+
+#ifdef G_OS_WIN32
+
+	gchar *moddir;
+	gchar *p;
+
+	moddir = g_win32_get_package_installation_directory_of_module (backend_dll);
+
+	p = g_strrstr (moddir, g_strdup_printf ("%c", G_DIR_SEPARATOR));
+	if (p != NULL
+	    && (g_ascii_strcasecmp (p + 1, "src") == 0
+	        || g_ascii_strcasecmp (p + 1, ".libs") == 0))
+		{
+			localedir = g_strdup (LOCALEDIR);
+		}
+	else
+		{
+			localedir = g_build_filename (moddir, "share", "locale", NULL);
+		}
+
+	g_free (moddir);
+
+#else
+
+	localedir = g_strdup (LOCALEDIR);
+
+#endif
+
+	bindtextdomain (GETTEXT_PACKAGE, localedir);
+	textdomain (GETTEXT_PACKAGE);
+	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 
 	zak_form_cgi_form = ZAK_FORM_CGI_FORM (g_object_new (zak_form_cgi_form_get_type (), NULL));
 
@@ -152,7 +211,7 @@ zak_form_cgi_form_bind (ZakFormCgiForm *zakcgiform)
 					gval = zak_cgi_main_get_stdin_field (priv->zakcgimain, zak_form_cgi_form_element_get_id (element));
 					if (gval != NULL)
 						{
-							zak_form_cgi_form_element_bind (element, g_value_get_string (gval));
+							zak_form_cgi_form_element_bind (element, gval);
 						}
 				}
 		}

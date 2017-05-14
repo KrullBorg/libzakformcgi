@@ -29,14 +29,25 @@ AC_PROG_MAKE_SET
 AC_PROG_LIBTOOL
 AC_PROG_RANLIB
 
+IT_PROG_INTLTOOL
+
+dnl ******************************
+dnl Translations
+dnl ******************************
+GETTEXT_PACKAGE=libzakformcgi
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE",
+                   [The prefix for our gettext translation domains.])
+AM_GLIB_GNU_GETTEXT
+
 # Checks for libraries.
 PKG_CHECK_MODULES(ZAKFORMCGI, [glib-2.0 >= 2.36
-                           gobject-2.0 >= 2.36
-                           gio-2.0 >= 2.36
-                           gio-unix-2.0 >= 2.36
-                           libzakcgi
-                           libzakform >= 0.0.1
-                           libzakformini])
+                               gobject-2.0 >= 2.36
+                               gio-2.0 >= 2.36
+                               gio-unix-2.0 >= 2.36
+                               libzakcgi
+                               libzakform >= 0.0.1
+                               libzakformini])
 
 AC_SUBST(ZAKFORMCGI_CFLAGS)
 AC_SUBST(ZAKFORMCGI_LIBS)
@@ -69,6 +80,7 @@ AM_CONDITIONAL(PLATFORM_WIN32, [test $platform_win32 = yes])
 AC_CONFIG_FILES([
 	libzakformcgi.pc
 	Makefile
+	po/Makefile.in
 	src/Makefile
 	tests/Makefile
 ])
