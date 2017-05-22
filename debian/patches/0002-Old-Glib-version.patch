@@ -1,0 +1,27 @@
+From: Andrea Zagli <azagli@libero.it>
+Date: Mon, 22 May 2017 18:35:59 +0200
+Subject: Old Glib version.
+
+---
+ configure.ac | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index b831410..2e5e889 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -41,10 +41,10 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE",
+ AM_GLIB_GNU_GETTEXT
+ 
+ # Checks for libraries.
+-PKG_CHECK_MODULES(ZAKFORMCGI, [glib-2.0 >= 2.36
+-                               gobject-2.0 >= 2.36
+-                               gio-2.0 >= 2.36
+-                               gio-unix-2.0 >= 2.36
++PKG_CHECK_MODULES(ZAKFORMCGI, [glib-2.0 >= 2.32
++                               gobject-2.0 >= 2.32
++                               gio-2.0 >= 2.32
++                               gio-unix-2.0 >= 2.32
+                                libzakcgi
+                                libzakform >= 0.0.1
+                                libzakformini])

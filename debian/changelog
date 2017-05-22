@@ -1,8 +1,26 @@
-libzakformcgi (0.0.1-1~2.gbp8ba02f) UNRELEASED; urgency=medium
+libzakformcgi (0.0.1-1~6.gbp356cb6) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @8ba02f58feca04d66fe2fa89339049c9044631ca **
+  ** SNAPSHOT build @356cb65f830e249ea0037ece3d328e542d0ecf0a **
 
   [ Andrea Zagli ]
   * Initial release
+  * Debian pkg: added debian files for wheezy.
 
- -- tux <tux@develop64.comune.scandicci.fi.it>  Mon, 22 May 2017 18:20:02 +0200
+  [ tux ]
+
+  [ Andrea Zagli ]
+  * Debian pkg: patches from wheezy.
+
+  [ tux ]
+
+  [ Andrea Zagli ]
+  * Debian pkg: patches from wheezy.
+
+  [ tux ]
+
+  [ Andrea Zagli ]
+  * Debian pkg: patches from wheezy.
+
+  [ tux ]
+
+ -- tux <tux@develop64.comune.scandicci.fi.it>  Fri, 26 May 2017 10:40:26 +0200

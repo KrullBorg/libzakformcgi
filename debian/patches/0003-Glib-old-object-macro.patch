@@ -1,0 +1,82 @@
+From: Andrea Zagli <azagli@libero.it>
+Date: Mon, 22 May 2017 18:52:02 +0200
+Subject: Glib old object macro.
+
+---
+ src/form.h        | 24 +++++++++++++++++++-----
+ src/formelement.h | 17 +++++++++++++++--
+ 2 files changed, 34 insertions(+), 7 deletions(-)
+
+diff --git a/src/form.h b/src/form.h
+index bb988c8..8225d5d 100644
+--- a/src/form.h
++++ b/src/form.h
+@@ -31,14 +31,28 @@
+ G_BEGIN_DECLS
+ 
+ 
+-#define ZAK_FORM_CGI_TYPE_FORM zak_form_cgi_form_get_type ()
+-G_DECLARE_DERIVABLE_TYPE (ZakFormCgiForm, zak_form_cgi_form, ZAK_FORM_CGI, FORM, ZakFormForm)
++#define ZAK_FORM_CGI_TYPE_FORM                 (zak_form_cgi_form_get_type ())
++#define ZAK_FORM_CGI_FORM(obj)                 (G_TYPE_CHECK_INSTANCE_CAST ((obj), ZAK_FORM_CGI_TYPE_FORM, ZakFormCgiForm))
++#define ZAK_FORM_CGI_FORM_CLASS(klass)         (G_TYPE_CHECK_CLASS_CAST ((klass), ZAK_FORM_CGI_TYPE_FORM, ZakFormCgiFormClass))
++#define ZAK_FORM_CGI_IS_FORM(obj)              (G_TYPE_CHECK_INSTANCE_TYPE ((obj), ZAK_FORM_CGI_TYPE_FORM))
++#define ZAK_FORM_CGI_IS_FORM_CLASS(klass)      (G_TYPE_CHECK_CLASS_TYPE ((klass), ZAK_FORM_CGI_TYPE_FORM))
++#define ZAK_FORM_CGI_FORM_GET_CLASS(obj)       (G_TYPE_INSTANCE_GET_CLASS ((obj), ZAK_FORM_CGI_TYPE_FORM, ZakFormCgiFormClass))
++
++typedef struct _ZakFormCgiForm ZakFormCgiForm;
++typedef struct _ZakFormCgiFormClass ZakFormCgiFormClass;
++
++struct _ZakFormCgiForm
++	{
++		ZakFormForm parent_instance;
++	};
+ 
+ struct _ZakFormCgiFormClass
+-{
+-	ZakFormFormClass parent_class;
+-};
++	{
++		ZakFormFormClass parent_class;
++	};
++
+ 
++GType zak_form_cgi_form_get_type (void);
+ 
+ ZakFormCgiForm *zak_form_cgi_form_new (ZakCgiMain *zakcgimain, ...);
+ 
+diff --git a/src/formelement.h b/src/formelement.h
+index 7908571..7786189 100644
+--- a/src/formelement.h
++++ b/src/formelement.h
+@@ -28,8 +28,20 @@
+ G_BEGIN_DECLS
+ 
+ 
+-#define ZAK_FORM_CGI_TYPE_FORM_ELEMENT zak_form_cgi_form_element_get_type ()
+-G_DECLARE_DERIVABLE_TYPE (ZakFormCgiFormElement, zak_form_cgi_form_element, ZAK_FORM_CGI, FORM_ELEMENT, ZakFormElement)
++#define ZAK_FORM_CGI_TYPE_FORM_ELEMENT                 (zak_form_cgi_form_element_get_type ())
++#define ZAK_FORM_CGI_FORM_ELEMENT(obj)                 (G_TYPE_CHECK_INSTANCE_CAST ((obj), ZAK_FORM_CGI_TYPE_FORM_ELEMENT, ZakFormCgiFormElement))
++#define ZAK_FORM_CGI_FORM_ELEMENT_CLASS(klass)         (G_TYPE_CHECK_CLASS_CAST ((klass), ZAK_FORM_CGI_TYPE_FORM_ELEMENT, ZakFormCgiFormElementClass))
++#define ZAK_FORM_CGI_IS_FORM_ELEMENT(obj)              (G_TYPE_CHECK_INSTANCE_TYPE ((obj), ZAK_FORM_CGI_TYPE_FORM_ELEMENT))
++#define ZAK_FORM_CGI_IS_FORM_ELEMENT_CLASS(klass)      (G_TYPE_CHECK_CLASS_TYPE ((klass), ZAK_FORM_CGI_TYPE_FORM_ELEMENT))
++#define ZAK_FORM_CGI_FORM_ELEMENT_GET_CLASS(obj)       (G_TYPE_INSTANCE_GET_CLASS ((obj), ZAK_FORM_CGI_TYPE_FORM_ELEMENT, ZakFormCgiFormElementClass))
++
++typedef struct _ZakFormCgiFormElement ZakFormCgiFormElement;
++typedef struct _ZakFormCgiFormElementClass ZakFormCgiFormElementClass;
++
++struct _ZakFormCgiFormElement
++	{
++		ZakFormElement parent_instance;
++	};
+ 
+ struct _ZakFormCgiFormElementClass
+ 	{
+@@ -45,6 +57,7 @@ struct _ZakFormCgiFormElementClass
+ 		gchar *(*render) (ZakFormCgiFormElement *element);
+ 	};
+ 
++GType zak_form_cgi_form_element_get_type (void);
+ 
+ gchar *zak_form_cgi_form_element_get_id (ZakFormCgiFormElement *element);
+ 

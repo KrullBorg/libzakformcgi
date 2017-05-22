@@ -1,1 +1,4 @@
 0001-DESTDIR-support.patch
+0002-Old-Glib-version.patch
+0003-Glib-old-object-macro.patch
+0004-Glib-old-version-dependency-in-pkg-config-file.patch
