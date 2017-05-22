@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Andrea Zagli <azagli@libero.it>
+ * Copyright (C) 2015-2017 Andrea Zagli <azagli@libero.it>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,13 +29,13 @@ static void zak_form_cgi_form_element_select_init (ZakFormCgiFormElementSelect *
 static gchar *zak_form_cgi_form_element_select_render (ZakFormCgiFormElement *element);
 
 static void zak_form_cgi_form_element_select_set_property (GObject *object,
-                               guint property_id,
-                               const GValue *value,
-                               GParamSpec *pspec);
+                                                           guint property_id,
+                                                           const GValue *value,
+                                                           GParamSpec *pspec);
 static void zak_form_cgi_form_element_select_get_property (GObject *object,
-                               guint property_id,
-                               GValue *value,
-                               GParamSpec *pspec);
+                                                           guint property_id,
+                                                           GValue *value,
+                                                           GParamSpec *pspec);
 
 static void zak_form_cgi_form_element_select_dispose (GObject *gobject);
 static void zak_form_cgi_form_element_select_finalize (GObject *gobject);
@@ -109,8 +109,8 @@ ZakFormCgiFormElement
 	va_start (ap, id);
 
 	ZAK_FORM_CGI_FORM_ELEMENT_CLASS (zak_form_cgi_form_element_select_parent_class)->construct (zak_form_cgi_form_element_select,
-																					  id,
-																					  zak_cgi_commons_valist_to_ghashtable (ap));
+		                      id,
+		                      zak_cgi_commons_valist_to_ghashtable (ap));
 
 	return zak_form_cgi_form_element_select;
 }
@@ -125,9 +125,9 @@ ZakFormCgiFormElement
  */
 void
 zak_form_cgi_form_element_select_add_option (ZakFormCgiFormElementSelect *element,
-										const gchar *value,
-										const gchar *content,
-										...)
+                                             const gchar *value,
+                                             const gchar *content,
+                                             ...)
 {
 	va_list ap;
 	GHashTable *ht_attrs;
@@ -191,8 +191,8 @@ zak_form_cgi_form_element_select_xml_parsing (ZakFormElement *element, xmlNodePt
 	if (id != NULL)
 		{
 			ZAK_FORM_CGI_FORM_ELEMENT_CLASS (zak_form_cgi_form_element_select_parent_class)->construct (ZAK_FORM_CGI_FORM_ELEMENT (element),
-																							  id,
-																							  ht_attrs);
+				                      id,
+				                      ht_attrs);
 			ret = TRUE;
 		}
 	else
@@ -243,11 +243,16 @@ static gchar
 				}
 
 			g_string_append (options,
-							 zak_cgi_tag_tag_ht ("option", NULL, ht_options_attrs));
+			                 zak_cgi_tag_tag_ht ("option", NULL, ht_options_attrs));
 			g_string_append (options, "\n");
 		}
 
 	ht_attrs = klass->get_ht_attrs (element);
+
+	if (!zak_form_element_get_editable (ZAK_FORM_ELEMENT (element)))
+		{
+			g_hash_table_insert (ht_attrs, (gpointer)"disabled", (gpointer)"disabled");
+		}
 
 	g_hash_table_replace (ht_attrs, "zak-cgi-content", g_strdup (options->str));
 	ret = zak_cgi_tag_tag_ht ("select", zak_form_cgi_form_element_get_id (element), ht_attrs);
@@ -260,9 +265,9 @@ static gchar
 /* PRIVATE */
 static void
 zak_form_cgi_form_element_select_set_property (GObject *object,
-                   guint property_id,
-                   const GValue *value,
-                   GParamSpec *pspec)
+                                               guint property_id,
+                                               const GValue *value,
+                                               GParamSpec *pspec)
 {
 	ZakFormCgiFormElementSelect *zak_form_cgi_form_element_select = (ZakFormCgiFormElementSelect *)object;
 	ZakFormCgiFormElementSelectPrivate *priv = ZAK_FORM_CGI_FORM_ELEMENT_SELECT_GET_PRIVATE (zak_form_cgi_form_element_select);
@@ -277,9 +282,9 @@ zak_form_cgi_form_element_select_set_property (GObject *object,
 
 static void
 zak_form_cgi_form_element_select_get_property (GObject *object,
-                   guint property_id,
-                   GValue *value,
-                   GParamSpec *pspec)
+                                               guint property_id,
+                                               GValue *value,
+                                               GParamSpec *pspec)
 {
 	ZakFormCgiFormElementSelect *zak_form_cgi_form_element_select = (ZakFormCgiFormElementSelect *)object;
 	ZakFormCgiFormElementSelectPrivate *priv = ZAK_FORM_CGI_FORM_ELEMENT_SELECT_GET_PRIVATE (zak_form_cgi_form_element_select);

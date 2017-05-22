@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Andrea Zagli <azagli@libero.it>
+ * Copyright (C) 2015-2017 Andrea Zagli <azagli@libero.it>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -55,6 +55,12 @@ GType zak_form_cgi_form_element_check_get_type (void);
 
 ZakFormCgiFormElement *zak_form_cgi_form_element_check_new (void);
 ZakFormCgiFormElement *zak_form_cgi_form_element_check_new_attrs (const gchar *id, ...);
+
+gchar *zak_form_cgi_form_element_check_get_text (ZakFormCgiFormElementCheck *element);
+void zak_form_cgi_form_element_check_set_text (ZakFormCgiFormElementCheck *element, const gchar *text);
+
+gboolean zak_form_cgi_form_element_check_get_in_line (ZakFormCgiFormElementCheck *element);
+void zak_form_cgi_form_element_check_set_in_line (ZakFormCgiFormElementCheck *element, gboolean in_line);
 
 gboolean zak_form_cgi_form_element_check_xml_parsing (ZakFormElement *element, xmlNodePtr xmlnode);
 

@@ -11,22 +11,25 @@ libzakformmodulesdir = `pkg-config --variable=modulesdir libzakform`
 LIBS = $(ZAKFORMCGI_LIBS)
 
 AM_CPPFLAGS = $(ZAKFORMCGI_CFLAGS) \
+              -DLOCALEDIR=\"$(localedir)\" \
               -DG_LOG_DOMAIN=\"ZakFormCGI\"
 
 lib_LTLIBRARIES = libzakformcgi.la
 
 libzakformcgi_la_SOURCES = commons.c \
-                       form.c \
-                       formelement.c \
-                       formelementcheck.c \
-                       formelementemail.c \
-                       formelementhidden.c \
-                       formelementpassword.c \
-                       formelementselect.c \
-                       formelementstring.c \
-                       formelementtext.c \
-                       formelementtextarea.c \
-                       formelementsubmit.c
+                           form.c \
+                           formelement.c \
+                           formelementcheck.c \
+                           formelementemail.c \
+                           formelementfile.c \
+                           formelementhidden.c \
+                           formelementpassword.c \
+                           formelementradio.c \
+                           formelementselect.c \
+                           formelementstring.c \
+                           formelementtext.c \
+                           formelementtextarea.c \
+                           formelementsubmit.c
 
 libzakformcgi_la_LDFLAGS = -no-undefined
 
@@ -37,8 +40,10 @@ libzakformcgi_include_HEADERS = \
                             formelement.h \
                             formelementcheck.h \
                             formelementemail.h \
+                            formelementfile.h \
                             formelementhidden.h \
                             formelementpassword.h \
+                            formelementradio.h \
                             formelementselect.h \
                             formelementstring.h \
                             formelementtext.h \

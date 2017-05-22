@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Andrea Zagli <azagli@libero.it>
+ * Copyright (C) 2016-2017 Andrea Zagli <azagli@libero.it>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,8 +23,10 @@
 #include <libzakformcgi/formelement.h>
 #include <libzakformcgi/formelementcheck.h>
 #include <libzakformcgi/formelementemail.h>
+#include <libzakformcgi/formelementfile.h>
 #include <libzakformcgi/formelementhidden.h>
 #include <libzakformcgi/formelementpassword.h>
+#include <libzakformcgi/formelementradio.h>
 #include <libzakformcgi/formelementselect.h>
 #include <libzakformcgi/formelementstring.h>
 #include <libzakformcgi/formelementsubmit.h>

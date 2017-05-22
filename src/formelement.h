@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Andrea Zagli <azagli@libero.it>
+ * Copyright (C) 2015-2017 Andrea Zagli <azagli@libero.it>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -38,6 +38,8 @@ struct _ZakFormCgiFormElementClass
 		void (*construct) (ZakFormCgiFormElement *element, const gchar *id, GHashTable *ht_attrs);
 		GHashTable *(*get_ht_attrs) (ZakFormCgiFormElement *element);
 
+		GHashTable *(*get_ht_label_attrs) (ZakFormCgiFormElement *element);
+
 		void (*xml_parsing) (ZakFormElement *element, xmlNode *xmlnode);
 
 		gchar *(*render) (ZakFormCgiFormElement *element);
@@ -48,9 +50,10 @@ gchar *zak_form_cgi_form_element_get_id (ZakFormCgiFormElement *element);
 
 void zak_form_cgi_form_element_set_label (ZakFormCgiFormElement *element, const gchar *label, ...);
 
-void zak_form_cgi_form_element_bind (ZakFormCgiFormElement *element, const gchar *value);
+void zak_form_cgi_form_element_bind (ZakFormCgiFormElement *element, GValue *value);
 
 gchar *zak_form_cgi_form_element_render (ZakFormCgiFormElement *element);
+gchar *zak_form_cgi_form_element_render_label (ZakFormCgiFormElement *element);
 
 
 G_END_DECLS

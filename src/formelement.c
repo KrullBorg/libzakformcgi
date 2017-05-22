@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Andrea Zagli <azagli@libero.it>
+ * Copyright (C) 2015-2017 Andrea Zagli <azagli@libero.it>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,7 +20,9 @@
 	#include <config.h>
 #endif
 
+#include <libzakutils/libzakutils.h>
 #include <libzakcgi/libzakcgi.h>
+
 #include "formelement.h"
 
 enum
@@ -32,25 +34,26 @@ static void zak_form_cgi_form_element_class_init (ZakFormCgiFormElementClass *cl
 static void zak_form_cgi_form_element_init (ZakFormCgiFormElement *zak_form_cgi_form_element);
 
 static void zak_form_cgi_form_element_construct (ZakFormCgiFormElement *element,
-											const gchar *id,
-											GHashTable *ht_attrs);
+                                                 const gchar *id,
+                                                 GHashTable *ht_attrs);
 
 static GHashTable *zak_form_cgi_form_element_get_ht_attrs (ZakFormCgiFormElement *element);
+static GHashTable *zak_form_cgi_form_element_get_ht_label_attrs (ZakFormCgiFormElement *element);
 
 static void zak_form_cgi_form_element_set_property (GObject *object,
-                               guint property_id,
-                               const GValue *value,
-                               GParamSpec *pspec);
+                                                    guint property_id,
+                                                    const GValue *value,
+                                                    GParamSpec *pspec);
 static void zak_form_cgi_form_element_get_property (GObject *object,
-                               guint property_id,
-                               GValue *value,
-                               GParamSpec *pspec);
+                                                    guint property_id,
+                                                    GValue *value,
+                                                    GParamSpec *pspec);
 
 static void zak_form_cgi_form_element_dispose (GObject *gobject);
 static void zak_form_cgi_form_element_finalize (GObject *gobject);
 
-static gchar *zak_form_cgi_form_element_get_value (ZakFormCgiFormElement *element);
-static gboolean zak_form_cgi_form_element_set_value (ZakFormCgiFormElement *element, const gchar *value);
+static GValue *zak_form_cgi_form_element_get_value (ZakFormCgiFormElement *element);
+static gboolean zak_form_cgi_form_element_set_value (ZakFormCgiFormElement *element, GValue *value);
 static void zak_form_cgi_form_element_xml_parsing (ZakFormElement *element, xmlNode *xmlnode);
 
 #define ZAK_FORM_CGI_FORM_ELEMENT_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), ZAK_FORM_CGI_TYPE_FORM_ELEMENT, ZakFormCgiFormElementPrivate))
@@ -61,7 +64,7 @@ struct _ZakFormCgiFormElementPrivate
 		gchar *id;
 		GHashTable *ht_attrs;
 		GHashTable *ht_label_attrs;
-		gchar *value;
+		GValue *value;
 	};
 
 G_DEFINE_TYPE (ZakFormCgiFormElement, zak_form_cgi_form_element, ZAK_FORM_TYPE_ELEMENT)
@@ -86,6 +89,7 @@ zak_form_cgi_form_element_class_init (ZakFormCgiFormElementClass *class)
 
 	class->construct = zak_form_cgi_form_element_construct;
 	class->get_ht_attrs = zak_form_cgi_form_element_get_ht_attrs;
+	class->get_ht_label_attrs = zak_form_cgi_form_element_get_ht_label_attrs;
 }
 
 static void
@@ -126,16 +130,23 @@ zak_form_cgi_form_element_set_label (ZakFormCgiFormElement *element, const gchar
 	if (priv->ht_label_attrs != NULL)
 		{
 			g_hash_table_destroy (priv->ht_label_attrs);
+			priv->ht_label_attrs = NULL;
 		}
 
-	va_start (ap, label);
-	priv->ht_label_attrs = zak_cgi_commons_valist_to_ghashtable (ap);
+	if (label != NULL)
+		{
+			va_start (ap, label);
+			priv->ht_label_attrs = zak_cgi_commons_valist_to_ghashtable (ap);
 
-	g_hash_table_replace (priv->ht_label_attrs, "zak-cgi-content", g_strdup (label));
-	g_hash_table_replace (priv->ht_label_attrs, "for", priv->id != NULL  ? g_strdup (priv->id) : g_strdup (""));
-	g_hash_table_replace (priv->ht_label_attrs, "class", "control-label");
+			g_hash_table_replace (priv->ht_label_attrs, "zak-cgi-content", g_strdup (label));
+			g_hash_table_replace (priv->ht_label_attrs, "for", priv->id != NULL  ? g_strdup (priv->id) : g_strdup (""));
+			g_hash_table_replace (priv->ht_label_attrs, "class", g_strdup ("control-label"));
 
-	zak_form_element_set_long_name (ZAK_FORM_ELEMENT (element), label);
+			if (zak_form_element_get_long_name (ZAK_FORM_ELEMENT (element)) == NULL)
+				{
+					zak_form_element_set_long_name (ZAK_FORM_ELEMENT (element), label);
+				}
+		}
 }
 
 /**
@@ -145,13 +156,13 @@ zak_form_cgi_form_element_set_label (ZakFormCgiFormElement *element, const gchar
  *
  */
 void
-zak_form_cgi_form_element_bind (ZakFormCgiFormElement *element, const gchar *value)
+zak_form_cgi_form_element_bind (ZakFormCgiFormElement *element, GValue *value)
 {
 	ZakFormCgiFormElementPrivate *priv;
 
 	priv = ZAK_FORM_CGI_FORM_ELEMENT_GET_PRIVATE (element);
 
-	priv->value = g_strdup (value);
+	priv->value = value;
 }
 
 /**
@@ -166,6 +177,10 @@ gchar
 	gchar *ret;
 	GPtrArray *messages;
 
+	guint i;
+
+	gchar *attr_class;
+
 	ZakFormCgiFormElementPrivate *priv;
 
 	priv = ZAK_FORM_CGI_FORM_ELEMENT_GET_PRIVATE (element);
@@ -173,31 +188,18 @@ gchar
 	str = g_string_new ("<div class=\"form-group");
 
 	messages = zak_form_element_get_messages (ZAK_FORM_ELEMENT (element));
-	if (messages != NULL)
+	if (messages != NULL
+	    && messages->len > 0)
 		{
 			g_string_append (str, " has-error");
 		}
 
 	g_string_append (str, "\">\n");
 
-	if (priv->ht_label_attrs != NULL)
-		{
-			gchar *lbl_id;
-
-			if (g_strcmp0 (g_hash_table_lookup (priv->ht_label_attrs, "for"), "") == 0)
-				{
-					g_hash_table_replace (priv->ht_label_attrs, "for", g_strdup (priv->id));
-				}
-
-			lbl_id = g_strdup_printf ("lbl_%s", priv->id);
-			g_string_append (str, zak_cgi_tag_tag_ht ("label", lbl_id, priv->ht_label_attrs));
-			g_free (lbl_id);
-		}
+	g_string_append (str, zak_form_cgi_form_element_render_label (element));
 
 	if (ZAK_FORM_CGI_IS_FORM_ELEMENT (element) && ZAK_FORM_CGI_FORM_ELEMENT_GET_CLASS (element)->render != NULL)
 		{
-			gchar *attr_class;
-
 			attr_class = g_hash_table_lookup (priv->ht_attrs, "class");
 			if (attr_class != NULL)
 				{
@@ -209,7 +211,12 @@ gchar
 				}
 			else
 				{
-					g_hash_table_replace (priv->ht_attrs, g_strdup ("class"), g_strdup ("form-control"));
+					g_hash_table_insert (priv->ht_attrs, "class", g_strdup ("form-control"));
+				}
+
+			if (!zak_form_element_get_editable (ZAK_FORM_ELEMENT (element)))
+				{
+					g_hash_table_insert (priv->ht_attrs, (gpointer)"readonly", (gpointer)"readonly");
 				}
 
 			g_string_append (str, ZAK_FORM_CGI_FORM_ELEMENT_GET_CLASS (element)->render (element));
@@ -217,15 +224,13 @@ gchar
 
 	if (messages != NULL)
 		{
-			guint i;
-
 			for (i = 0; i < messages->len; i++)
 				{
 					g_string_append_printf (str,
-											"\n<span id=\"helpBox_%s%d\" class=\"help-block\">%s</span>",
-											priv->id,
-											i + 1,
-											(gchar *)g_ptr_array_index (messages, i));
+					                        "\n<span id=\"helpBox_%s_%d\" class=\"help-block\">%s</span>",
+					                        priv->id,
+					                        i + 1,
+					                        (gchar *)g_ptr_array_index (messages, i));
 				}
 		}
 
@@ -237,11 +242,56 @@ gchar
 	return ret;
 }
 
+/**
+ * zak_form_cgi_form_element_render_label:
+ * @element:
+ *
+ */
+gchar
+*zak_form_cgi_form_element_render_label (ZakFormCgiFormElement *element)
+{
+	GString *str;
+	gchar *ret;
+	gchar *lbl_id;
+
+	ZakFormCgiFormElementPrivate *priv;
+
+	priv = ZAK_FORM_CGI_FORM_ELEMENT_GET_PRIVATE (element);
+
+	str = NULL;
+
+	if (priv->ht_label_attrs != NULL)
+		{
+			str = g_string_new ("");
+
+			if (g_strcmp0 (g_hash_table_lookup (priv->ht_label_attrs, "for"), "") == 0)
+				{
+					g_hash_table_replace (priv->ht_label_attrs, "for", g_strdup (priv->id));
+				}
+
+			lbl_id = g_strdup_printf ("lbl_%s", priv->id);
+			g_string_append (str, zak_cgi_tag_tag_ht ("label", lbl_id, priv->ht_label_attrs));
+			g_free (lbl_id);
+		}
+
+	if (str != NULL)
+		{
+			ret = g_strdup (str->str);
+			g_string_free (str, TRUE);
+		}
+	else
+		{
+			ret = g_strdup ("");
+		}
+
+	return ret;
+}
+
 /* PRIVATE */
 static void
 zak_form_cgi_form_element_construct (ZakFormCgiFormElement *element,
-								const gchar *id,
-								GHashTable *ht_attrs)
+                                     const gchar *id,
+                                     GHashTable *ht_attrs)
 {
 	ZakFormCgiFormElementPrivate *priv;
 
@@ -272,37 +322,47 @@ static GHashTable
 	return priv->ht_attrs;
 }
 
-static gchar
+static GHashTable
+*zak_form_cgi_form_element_get_ht_label_attrs (ZakFormCgiFormElement *element)
+{
+	ZakFormCgiFormElementPrivate *priv;
+
+	priv = ZAK_FORM_CGI_FORM_ELEMENT_GET_PRIVATE (element);
+
+	return priv->ht_label_attrs;
+}
+
+static GValue
 *zak_form_cgi_form_element_get_value (ZakFormCgiFormElement *element)
 {
-	gchar *ret;
+	GValue *ret;
 
 	ZakFormCgiFormElementPrivate *priv;
 
 	priv = ZAK_FORM_CGI_FORM_ELEMENT_GET_PRIVATE (element);
 
-	ret = g_strdup (priv->value);
+	ret = priv->value;
 
 	return ret;
 }
 
 static gboolean
-zak_form_cgi_form_element_set_value (ZakFormCgiFormElement *element, const gchar *value)
+zak_form_cgi_form_element_set_value (ZakFormCgiFormElement *element, GValue *value)
 {
 	ZakFormCgiFormElementPrivate *priv;
 
 	priv = ZAK_FORM_CGI_FORM_ELEMENT_GET_PRIVATE (element);
 
-	priv->value = g_strdup (value);
+	priv->value = value;
 
 	return TRUE;
 }
 
 static void
 zak_form_cgi_form_element_set_property (GObject *object,
-                   guint property_id,
-                   const GValue *value,
-                   GParamSpec *pspec)
+                                        guint property_id,
+                                        const GValue *value,
+                                        GParamSpec *pspec)
 {
 	ZakFormCgiFormElement *zak_form_cgi_form_element = (ZakFormCgiFormElement *)object;
 	ZakFormCgiFormElementPrivate *priv = ZAK_FORM_CGI_FORM_ELEMENT_GET_PRIVATE (zak_form_cgi_form_element);
@@ -317,9 +377,9 @@ zak_form_cgi_form_element_set_property (GObject *object,
 
 static void
 zak_form_cgi_form_element_get_property (GObject *object,
-                   guint property_id,
-                   GValue *value,
-                   GParamSpec *pspec)
+                                        guint property_id,
+                                        GValue *value,
+                                        GParamSpec *pspec)
 {
 	ZakFormCgiFormElement *zak_form_cgi_form_element = (ZakFormCgiFormElement *)object;
 	ZakFormCgiFormElementPrivate *priv = ZAK_FORM_CGI_FORM_ELEMENT_GET_PRIVATE (zak_form_cgi_form_element);
