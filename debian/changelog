@@ -1,10 +1,30 @@
-libzakformcgi (0.0.1-1~1.gbpcc7c43) UNRELEASED; urgency=medium
+libzakformcgi (0.0.1-1~2.gbp8ba02f) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @cc7c43e0ce6d982bf56507ce89c75f7f44d61d6a **
+  ** SNAPSHOT build @8ba02f58feca04d66fe2fa89339049c9044631ca **
 
   [ Andrea Zagli ]
   * Initial release
 
   [ tux ]
 
- -- Andrea Zagli <azagli@libero.it>  Sun, 20 Nov 2016 15:11:41 +0100
+  [ Andrea Zagli ]
+  * Debian pkg: added files.
+  * FormElement doesn't take into account editable property.
+  * Implemented input type radio (closes #1017).
+  * Now ZakFormElement::messages is always not null.
+  * Bugfix to remove label from element.
+  * Added function ZakFormCgiFormElement::render_label.
+  * Added property inline to ZakCgiFormElementRadio.
+  * Added private function ZakFormCgiFormElement::get_ht_label_attrs.
+  * Added properties text and inline to ZakFormCgiFormElementCheck.
+  * Adjustments to checkbox and radio rendering.
+  * Moved from GHashTable to GPtrArray in ZakForCgiFormElementRadio
+  * Setting of long-name on setting label only if it is null.
+  * Started implementation of ElementFile.
+  * Migration to GValue for element value.
+  * Added validator for size and mime type for ZakFormCgiFormElementFile.
+  * Select is not editable with key "disabled".
+
+  [ tux ]
+
+ -- tux <tux@develop64.comune.scandicci.fi.it>  Mon, 22 May 2017 18:20:02 +0200

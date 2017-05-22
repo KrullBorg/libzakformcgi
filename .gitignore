@@ -51,3 +51,4 @@ intltool-*
 Rules-quot
 *.exe
 *.csv
+build/
