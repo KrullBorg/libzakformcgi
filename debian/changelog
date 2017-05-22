@@ -1,0 +1,8 @@
+libzakformcgi (0.0.1-1~2.gbp8ba02f) UNRELEASED; urgency=medium
+
+  ** SNAPSHOT build @8ba02f58feca04d66fe2fa89339049c9044631ca **
+
+  [ Andrea Zagli ]
+  * Initial release
+
+ -- tux <tux@develop64.comune.scandicci.fi.it>  Mon, 22 May 2017 18:20:02 +0200

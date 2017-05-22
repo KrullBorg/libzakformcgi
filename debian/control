@@ -1,0 +1,24 @@
+Source: libzakformcgi
+Priority: optional
+Maintainer: Andrea Zagli <azagli@libero.it>
+Build-Depends: debhelper (>= 9), intltool, pkg-config, gnome-common, gtk-doc-tools, libzakcgi-dev, libzakform-dev
+Standards-Version: 3.9.8
+Section: libs
+Homepage: http://saetta.ns0.it
+#Vcs-Git: https://anonscm.debian.org/collab-maint/libzakformcgi.git
+#Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/libzakformcgi.git
+
+Package: libzakformcgi-dev
+Section: libdevel
+Architecture: any
+Depends: libzakformcgi (= ${binary:Version}), ${misc:Depends}, libzakcgi-dev, libzakform-dev
+Description: Bind to libzakform for libzakcgi - development files.
+ Bind to libzakform for libzakcgi.
+ .
+ Development files.
+
+Package: libzakformcgi
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libzakcgi, libzakform
+Description: Bind to libzakform for libzakcgi.
+ Bind to libzakform to libzakcgi.
