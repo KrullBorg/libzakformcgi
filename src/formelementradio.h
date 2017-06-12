@@ -59,7 +59,7 @@ ZakFormCgiFormElement *zak_form_cgi_form_element_radio_new_attrs (const gchar *i
 gboolean zak_form_cgi_form_element_radio_get_in_line (ZakFormCgiFormElementRadio *element);
 void zak_form_cgi_form_element_radio_set_in_line (ZakFormCgiFormElementRadio *element, gboolean in_line);
 
-gboolean zak_form_cgi_form_element_radio_xml_parsing (ZakFormElement *element, xmlNodePtr xmlnode);
+void zak_form_cgi_form_element_radio_xml_parsing (ZakFormElement *element, xmlNodePtr xmlnode);
 
 
 G_END_DECLS

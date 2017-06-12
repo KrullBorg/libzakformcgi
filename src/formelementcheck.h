@@ -62,7 +62,7 @@ void zak_form_cgi_form_element_check_set_text (ZakFormCgiFormElementCheck *eleme
 gboolean zak_form_cgi_form_element_check_get_in_line (ZakFormCgiFormElementCheck *element);
 void zak_form_cgi_form_element_check_set_in_line (ZakFormCgiFormElementCheck *element, gboolean in_line);
 
-gboolean zak_form_cgi_form_element_check_xml_parsing (ZakFormElement *element, xmlNodePtr xmlnode);
+void zak_form_cgi_form_element_check_xml_parsing (ZakFormElement *element, xmlNodePtr xmlnode);
 
 
 G_END_DECLS
