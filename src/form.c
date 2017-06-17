@@ -185,6 +185,28 @@ get_idx (ZakFormCgiForm *zakcgiform, const gchar *id)
 	return idx;
 }
 
+static void
+_zak_form_cgi_form_bind (ZakFormCgiFormPrivate *priv, ZakFormCgiFormElement *element)
+{
+	gchar *id;
+	GValue *gval;
+
+	id = zak_form_cgi_form_element_get_id (element);
+	if (id != NULL)
+		{
+			gval = zak_cgi_main_get_stdin_field (priv->zakcgimain, id);
+			if (gval != NULL)
+				{
+					zak_form_cgi_form_element_bind (element, gval);
+				}
+			g_free (id);
+		}
+	else
+		{
+			g_warning (_("Element without id."));
+		}
+}
+
 /**
  * zak_form_cgi_form_bind:
  * @zakcgiform:
@@ -194,8 +216,6 @@ void
 zak_form_cgi_form_bind (ZakFormCgiForm *zakcgiform)
 {
 	guint i;
-
-	GValue *gval;
 
 	ZakFormCgiFormPrivate *priv;
 
@@ -208,10 +228,20 @@ zak_form_cgi_form_bind (ZakFormCgiForm *zakcgiform)
 			ZakFormCgiFormElement *element = (ZakFormCgiFormElement *)g_ptr_array_index (priv->ar_elems, i);
 			if (!ZAK_FORM_CGI_IS_FORM_ELEMENT_STRING (element))
 				{
-					gval = zak_cgi_main_get_stdin_field (priv->zakcgimain, zak_form_cgi_form_element_get_id (element));
-					if (gval != NULL)
+					if (ZAK_FORM_IS_ELEMENT_ARRAY ((ZAK_FORM_ELEMENT (element))))
 						{
-							zak_form_cgi_form_element_bind (element, gval);
+							GPtrArray *ar_elements;
+							guint l;
+
+							ar_elements = zak_form_element_array_get_elements (ZAK_FORM_ELEMENT_ARRAY (element));
+							for (l = 0; l < ar_elements->len; l++)
+								{
+									_zak_form_cgi_form_bind (priv, (ZakFormCgiFormElement *)g_ptr_array_index (ar_elements, l));
+								}
+						}
+					else
+						{
+							_zak_form_cgi_form_bind (priv, element);
 						}
 				}
 		}
@@ -275,9 +305,26 @@ gchar
 	for (i = 0; i < priv->ar_elems->len; i++)
 		{
 			ZakFormCgiFormElement *element = (ZakFormCgiFormElement *)g_ptr_array_index (priv->ar_elems, i);
-			tmp = zak_form_cgi_form_element_render (element);
-			g_string_append_printf (str, "\n%s", tmp);
-			g_free (tmp);
+
+			if (ZAK_FORM_IS_ELEMENT_ARRAY (element))
+				{
+					GPtrArray *ar_elements;
+					guint l;
+
+					ar_elements = zak_form_element_array_get_elements (ZAK_FORM_ELEMENT (element));
+					for (l = 0; l < ar_elements->len; l++)
+						{
+							tmp = zak_form_cgi_form_element_render ((ZakFormCgiFormElement *)g_ptr_array_index (ar_elements, l));
+							g_string_append_printf (str, "\n%s", tmp);
+							g_free (tmp);
+						}
+				}
+			else
+				{
+					tmp = zak_form_cgi_form_element_render (element);
+					g_string_append_printf (str, "\n%s", tmp);
+					g_free (tmp);
+				}
 		}
 
 	g_string_append (str, "\n</form>");

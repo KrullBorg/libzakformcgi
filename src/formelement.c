@@ -196,7 +196,10 @@ gchar
 
 	g_string_append (str, "\">\n");
 
-	g_string_append (str, zak_form_cgi_form_element_render_label (element));
+	if (ZAK_FORM_CGI_IS_FORM_ELEMENT (element))
+		{
+			g_string_append (str, zak_form_cgi_form_element_render_label (element));
+		}
 
 	if (ZAK_FORM_CGI_IS_FORM_ELEMENT (element) && ZAK_FORM_CGI_FORM_ELEMENT_GET_CLASS (element)->render != NULL)
 		{
