@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Andrea Zagli <azagli@libero.it>
+ * Copyright (C) 2015-2017 Andrea Zagli <azagli@libero.it>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -56,12 +56,15 @@ static void
 zak_form_cgi_form_element_string_class_init (ZakFormCgiFormElementStringClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	ZakFormElementClass *form_elem_class = ZAK_FORM_ELEMENT_CLASS (klass);
 	ZakFormCgiFormElementClass *elem_class = ZAK_FORM_CGI_FORM_ELEMENT_CLASS (klass);
 
 	object_class->set_property = zak_form_cgi_form_element_string_set_property;
 	object_class->get_property = zak_form_cgi_form_element_string_get_property;
 	object_class->dispose = zak_form_cgi_form_element_string_dispose;
 	object_class->finalize = zak_form_cgi_form_element_string_finalize;
+
+	form_elem_class->xml_parsing = zak_form_cgi_form_element_string_xml_parsing;
 
 	elem_class->render = zak_form_cgi_form_element_string_render;
 	//elem_class->is_valid = zak_form_cgi_form_element_string_is_valid;
@@ -112,18 +115,12 @@ ZakFormCgiFormElement
 	return zak_form_cgi_form_element_string;
 }
 
-gboolean
+void
 zak_form_cgi_form_element_string_xml_parsing (ZakFormElement *element, xmlNodePtr xmlnode)
 {
-	gboolean ret;
-
 	xmlNode *cur;
 
 	ZakFormCgiFormElementStringPrivate *priv;
-
-	ret = FALSE;
-
-	ZAK_FORM_CGI_FORM_ELEMENT_CLASS (zak_form_cgi_form_element_string_parent_class)->xml_parsing (element, xmlnode);
 
 	cur = xmlnode->children;
 	while (cur != NULL)
@@ -132,14 +129,11 @@ zak_form_cgi_form_element_string_xml_parsing (ZakFormElement *element, xmlNodePt
 				{
 					priv = ZAK_FORM_CGI_FORM_ELEMENT_STRING_GET_PRIVATE (ZAK_FORM_CGI_FORM_ELEMENT_STRING (element));
 					priv->str = g_strdup ((gchar *)xmlNodeGetContent (cur));
-					ret = TRUE;
 					break;
 				}
 
 			cur = cur->next;
 		}
-
-	return ret;
 }
 
 static gchar

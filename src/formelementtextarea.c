@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Andrea Zagli <azagli@libero.it>
+ * Copyright (C) 2015-2017 Andrea Zagli <azagli@libero.it>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -54,12 +54,15 @@ static void
 zak_form_cgi_form_element_text_area_class_init (ZakFormCgiFormElementTextAreaClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	ZakFormElementClass *form_elem_class = ZAK_FORM_ELEMENT_CLASS (klass);
 	ZakFormCgiFormElementClass *elem_class = ZAK_FORM_CGI_FORM_ELEMENT_CLASS (klass);
 
 	object_class->set_property = zak_form_cgi_form_element_text_area_set_property;
 	object_class->get_property = zak_form_cgi_form_element_text_area_get_property;
 	object_class->dispose = zak_form_cgi_form_element_text_area_dispose;
 	object_class->finalize = zak_form_cgi_form_element_text_area_finalize;
+
+	form_elem_class->xml_parsing = zak_form_cgi_form_element_text_area_xml_parsing;
 
 	elem_class->render = zak_form_cgi_form_element_text_area_render;
 
@@ -114,11 +117,9 @@ ZakFormCgiFormElement
 	return zak_form_cgi_form_element_text_area;
 }
 
-gboolean
+void
 zak_form_cgi_form_element_text_area_xml_parsing (ZakFormElement *element, xmlNodePtr xmlnode)
 {
-	gboolean ret;
-
 	gchar *id;
 
 	GHashTable *ht_attrs;
@@ -126,8 +127,6 @@ zak_form_cgi_form_element_text_area_xml_parsing (ZakFormElement *element, xmlNod
 	xmlNode *cur;
 
 	id = NULL;
-
-	ZAK_FORM_CGI_FORM_ELEMENT_CLASS (zak_form_cgi_form_element_text_area_parent_class)->xml_parsing (element, xmlnode);
 
 	ht_attrs = g_hash_table_new (g_str_hash, g_str_equal);
 
@@ -158,14 +157,7 @@ zak_form_cgi_form_element_text_area_xml_parsing (ZakFormElement *element, xmlNod
 			ZAK_FORM_CGI_FORM_ELEMENT_CLASS (zak_form_cgi_form_element_text_area_parent_class)->construct (ZAK_FORM_CGI_FORM_ELEMENT (element),
 																								 id,
 																								 ht_attrs);
-			ret = TRUE;
 		}
-	else
-		{
-			ret = FALSE;
-		}
-
-	return ret;
 }
 
 static gchar

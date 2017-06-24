@@ -69,6 +69,8 @@ zak_form_cgi_form_element_file_class_init (ZakFormCgiFormElementFileClass *klass
 	object_class->dispose = zak_form_cgi_form_element_file_dispose;
 	object_class->finalize = zak_form_cgi_form_element_file_finalize;
 
+	elem_class->xml_parsing = zak_form_cgi_form_element_file_xml_parsing;
+
 	cgi_elem_class->render = zak_form_cgi_form_element_file_render;
 
 	g_type_class_add_private (object_class, sizeof (ZakFormCgiFormElementFilePrivate));
@@ -129,11 +131,9 @@ ZakFormCgiFormElement
 	return zak_form_cgi_form_element_file;
 }
 
-gboolean
+void
 zak_form_cgi_form_element_file_xml_parsing (ZakFormElement *element, xmlNodePtr xmlnode)
 {
-	gboolean ret;
-
 	gchar *id;
 
 	GHashTable *ht_attrs;
@@ -141,8 +141,6 @@ zak_form_cgi_form_element_file_xml_parsing (ZakFormElement *element, xmlNodePtr 
 	xmlNode *cur;
 
 	id = NULL;
-
-	ZAK_FORM_CGI_FORM_ELEMENT_CLASS (zak_form_cgi_form_element_file_parent_class)->xml_parsing (element, xmlnode);
 
 	ht_attrs = g_hash_table_new (g_str_hash, g_str_equal);
 
@@ -186,14 +184,7 @@ zak_form_cgi_form_element_file_xml_parsing (ZakFormElement *element, xmlNodePtr 
 			ZAK_FORM_CGI_FORM_ELEMENT_CLASS (zak_form_cgi_form_element_file_parent_class)->construct (ZAK_FORM_CGI_FORM_ELEMENT (element),
 				                    id,
 				                    ht_attrs);
-			ret = TRUE;
 		}
-	else
-		{
-			ret = FALSE;
-		}
-
-	return ret;
 }
 
 void

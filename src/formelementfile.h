@@ -56,7 +56,7 @@ GType zak_form_cgi_form_element_file_get_type (void);
 ZakFormCgiFormElement *zak_form_cgi_form_element_file_new (void);
 ZakFormCgiFormElement *zak_form_cgi_form_element_file_new_attrs (const gchar *id, ...);
 
-gboolean zak_form_cgi_form_element_file_xml_parsing (ZakFormElement *element, xmlNodePtr xmlnode);
+void zak_form_cgi_form_element_file_xml_parsing (ZakFormElement *element, xmlNodePtr xmlnode);
 
 void zak_form_cgi_form_element_file_set_size_min (ZakFormElement *element, guint min);
 guint zak_form_cgi_form_element_file_get_size_min (ZakFormElement *element);

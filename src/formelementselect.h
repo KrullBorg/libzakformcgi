@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Andrea Zagli <azagli@libero.it>
+ * Copyright (C) 2015-2017 Andrea Zagli <azagli@libero.it>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -58,7 +58,7 @@ ZakFormCgiFormElement *zak_form_cgi_form_element_select_new_attrs (const gchar *
 
 void zak_form_cgi_form_element_select_add_option (ZakFormCgiFormElementSelect *element, const gchar *value, const gchar *content, ...);
 
-gboolean zak_form_cgi_form_element_select_xml_parsing (ZakFormElement *element, xmlNodePtr xmlnode);
+void zak_form_cgi_form_element_select_xml_parsing (ZakFormElement *element, xmlNodePtr xmlnode);
 
 
 G_END_DECLS

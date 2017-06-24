@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Andrea Zagli <azagli@libero.it>
+ * Copyright (C) 2016-2017 Andrea Zagli <azagli@libero.it>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -56,7 +56,7 @@ GType zak_form_cgi_form_element_email_get_type (void);
 ZakFormCgiFormElement *zak_form_cgi_form_element_email_new ();
 ZakFormCgiFormElement *zak_form_cgi_form_element_email_new_attrs (const gchar *id, ...);
 
-gboolean zak_form_cgi_form_element_email_xml_parsing (ZakFormElement *element, xmlNodePtr xmlnode);
+void zak_form_cgi_form_element_email_xml_parsing (ZakFormElement *element, xmlNodePtr xmlnode);
 
 
 G_END_DECLS

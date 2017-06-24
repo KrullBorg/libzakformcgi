@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Andrea Zagli <azagli@libero.it>
+ * Copyright (C) 2015-2017 Andrea Zagli <azagli@libero.it>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -56,7 +56,7 @@ GType zak_form_cgi_form_element_string_get_type (void);
 ZakFormCgiFormElement *zak_form_cgi_form_element_string_new (void);
 ZakFormCgiFormElement *zak_form_cgi_form_element_string_new_attrs (const gchar *str);
 
-gboolean zak_form_cgi_form_element_string_xml_parsing (ZakFormElement *element, xmlNodePtr xmlnode);
+void zak_form_cgi_form_element_string_xml_parsing (ZakFormElement *element, xmlNodePtr xmlnode);
 
 
 G_END_DECLS
