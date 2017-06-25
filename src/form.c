@@ -22,6 +22,8 @@
 
 #include <glib/gi18n-lib.h>
 
+#include <libzakutils/libzakutils.h>
+
 #include "form.h"
 #include "formelementstring.h"
 
@@ -195,10 +197,11 @@ _zak_form_cgi_form_bind (ZakFormCgiFormPrivate *priv, ZakFormCgiFormElement *ele
 	if (id != NULL)
 		{
 			gval = zak_cgi_main_get_stdin_field (priv->zakcgimain, id);
-			if (gval != NULL)
+			if (gval == NULL)
 				{
-					zak_form_cgi_form_element_bind (element, gval);
+					gval = zak_utils_gvalue_new_string ("");
 				}
+			zak_form_cgi_form_element_bind (element, gval);
 			g_free (id);
 		}
 	else
