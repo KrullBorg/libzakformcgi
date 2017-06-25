@@ -1,6 +1,6 @@
-libzakformcgi (0.0.1-1~8.gbp318faf) UNRELEASED; urgency=medium
+libzakformcgi (0.0.1-1~10.gbpb593fd) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @318faf830baa0e0c879787a0c95b904c91fdb300 **
+  ** SNAPSHOT build @b593fd0bbd94f811e2c28fca0faf2b9ab1155766 **
 
   [ Andrea Zagli ]
   * Initial release
@@ -34,4 +34,16 @@ libzakformcgi (0.0.1-1~8.gbp318faf) UNRELEASED; urgency=medium
 
   [ tux ]
 
- -- tux <tux@develop64.example.tst>  Sat, 24 Jun 2017 15:30:01 +0200
+  [ Andrea Zagli ]
+  * Starting taking into account ZakFormElementArray.
+  * Debian pkg: updates from upstream.
+
+  [ tux ]
+
+  [ Andrea Zagli ]
+  * Missing file in translations file.
+  * Starting taking into account ZakFormElementArray.
+
+  [ tux ]
+
+ -- tux <tux@develop64.example.tst>  Sun, 25 Jun 2017 11:52:24 +0200
