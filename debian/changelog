@@ -1,6 +1,6 @@
-libzakformcgi (0.0.1-1~10.gbpb593fd) UNRELEASED; urgency=medium
+libzakformcgi (0.0.1-1~11.gbp442b4e) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @b593fd0bbd94f811e2c28fca0faf2b9ab1155766 **
+  ** SNAPSHOT build @442b4e82e9302ac6711b58a0b38d7330a0c8e91a **
 
   [ Andrea Zagli ]
   * Initial release
@@ -46,4 +46,10 @@ libzakformcgi (0.0.1-1~10.gbpb593fd) UNRELEASED; urgency=medium
 
   [ tux ]
 
- -- tux <tux@develop64.example.tst>  Sun, 25 Jun 2017 11:52:24 +0200
+  [ Andrea Zagli ]
+  * Debian pkg: updates from upstream.
+  * In binding if the value is null, value is setted as empty string.
+
+  [ tux ]
+
+ -- tux <tux@develop64.example.tst>  Mon, 26 Jun 2017 15:23:06 +0200
