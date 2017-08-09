@@ -236,7 +236,7 @@ zak_form_cgi_form_bind (ZakFormCgiForm *zakcgiform)
 							GPtrArray *ar_elements;
 							guint l;
 
-							ar_elements = zak_form_element_array_get_elements (ZAK_FORM_ELEMENT_ARRAY (element));
+							ar_elements = zak_form_element_array_get_elements (ZAK_FORM_ELEMENT (element));
 							for (l = 0; l < ar_elements->len; l++)
 								{
 									_zak_form_cgi_form_bind (priv, (ZakFormCgiFormElement *)g_ptr_array_index (ar_elements, l));

@@ -187,6 +187,11 @@ gchar
 
 	str = g_string_new ("<div class=\"form-group");
 
+	if (!zak_form_element_get_visible (ZAK_FORM_ELEMENT (element)))
+		{
+			g_string_append (str, " hidden");
+		}
+
 	messages = zak_form_element_get_messages (ZAK_FORM_ELEMENT (element));
 	if (messages != NULL
 	    && messages->len > 0)
